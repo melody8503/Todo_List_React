@@ -1,5 +1,7 @@
 # Todo List X MVC with React
 
+![image](https://github.com/melody8503/Todo_List_React/blob/main/src/assets/images/todo_list.png)
+
 ## Features 功能
 
 - 可以新增 Todo 項目
