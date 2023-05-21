@@ -1,4 +1,6 @@
 import styled from 'styled-components';
+import { useRef } from 'react';
+import clsx from 'clsx';
 import {
   CheckActiveIcon,
   CheckCircleIcon,
@@ -100,15 +102,45 @@ const StyledTaskItem = styled.div`
   }
 `;
 
-const TodoItem = () => {
+const TodoItem = ({ todo, onToggleDone, onSave, onDelete, onChangeMode }) => {
+  // 取得編輯時輸入的內容；初始值為null
+  const inputRef = useRef(null);
+
+  const handleKeyDown = (e) => {
+    // 保存編輯輸入的內容
+    if (inputRef.current.value.length > 0 && e.key === 'Enter') {
+      onSave?.({ id: todo.id, title: inputRef.current.value });
+    }
+
+    // 取消編輯模式
+    if (e.key === 'Escape') {
+      onChangeMode?.({ id: todo.id, isEdit: false });
+    }
+  };
+
   return (
-    <StyledTaskItem>
+    <StyledTaskItem
+      className={clsx('', { done: todo.isDone, edit: todo.isEdit })}
+    >
       <div className="task-item-checked">
-        <span className="icon icon-checked" />
+        <span
+          className="icon icon-checked"
+          onClick={() => {
+            onToggleDone?.(todo.id);
+          }}
+        />
       </div>
-      <div className="task-item-body">
-        <span className="task-item-body-text">todo</span>
-        <input className="task-item-body-input" />
+      <div
+        className="task-item-body"
+        onDoubleClick={() => onChangeMode?.({ id: todo.id, isEdit: true })}
+      >
+        <span className="task-item-body-text">{todo.title}</span>
+        <input
+          ref={inputRef}
+          className="task-item-body-input"
+          onKeyDown={handleKeyDown}
+          defaultValue={todo.title}
+        />
       </div>
       <div className="task-item-action ">
         <button className="btn-reset btn-destroy icon"></button>
