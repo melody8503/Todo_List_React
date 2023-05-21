@@ -126,6 +126,13 @@ const TodoPage = () => {
     });
   };
 
+  // 刪除todo，篩選出非點擊到的id
+  const handleDelete = (id) => {
+    setTodos((prevTodos) => {
+      return prevTodos.filter((todo) => todo.id !== id);
+    });
+  };
+
   return (
     <div>
       TodoPage
@@ -141,8 +148,9 @@ const TodoPage = () => {
         onToggleDone={handleToggleDone}
         onChangeMode={handleChangeMode}
         onSave={handleSave}
+        onDelete={handleDelete}
       />
-      <Footer />
+      <Footer todos={todos} />
     </div>
   );
 };
