@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getTodos } from '../api/todos';
+import { getTodos, createTodo } from '../api/todos';
 import { Footer, Header, TodoCollection, TodoInput } from 'components';
 
 const TodoPage = () => {
@@ -13,46 +13,70 @@ const TodoPage = () => {
     setInputValue(value);
   };
 
-  const handleAddTodo = () => {
+  const handleAddTodo = async () => {
     // 判斷是否有輸入內容
     if (inputValue.length === 0) {
       return;
     }
 
-    setTodos((prevTodos) => {
-      //透過解構賦值將原本的todos拆解，並在後方增加新的todo
-      return [
-        ...prevTodos,
-        {
-          id: Math.random() * 100,
-          title: inputValue,
-          isDone: false,
-        },
-      ];
-    });
+    try {
+      // 從後端取得建立的todo
+      const data = await createTodo({
+        title: inputValue,
+        isDone: false,
+      });
 
-    // 清空inputValue
-    setInputValue('');
+      setTodos((prevTodos) => {
+        //透過解構賦值將原本的todos拆解，並在後方增加新的todo
+        return [
+          ...prevTodos,
+          {
+            id: data.id,
+            title: data.title,
+            isDone: data.isDone,
+            isEdit: false,
+          },
+        ];
+      });
+
+      // 清空inputValue
+      setInputValue('');
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // 透過Enter新增todo
-  const handleKeyDown = () => {
+  const handleKeyDown = async () => {
     if (inputValue.length === 0) {
       return;
     }
 
-    setTodos((prevTodos) => {
-      return [
-        ...prevTodos,
-        {
-          id: Math.random() * 100,
-          title: inputValue,
-          isDone: false,
-        },
-      ];
-    });
+    try {
+      // 從後端取得建立的todo
+      const data = await createTodo({
+        title: inputValue,
+        isDone: false,
+      });
 
-    setInputValue('');
+      setTodos((prevTodos) => {
+        //透過解構賦值將原本的todos拆解，並在後方增加新的todo
+        return [
+          ...prevTodos,
+          {
+            id: data.id,
+            title: data.title,
+            isDone: data.isDone,
+            isEdit: false,
+          },
+        ];
+      });
+
+      // 清空inputValue
+      setInputValue('');
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // 透過id切換完成狀態
