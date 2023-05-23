@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getTodos, createTodo, patchTodo } from '../api/todos';
+import { getTodos, createTodo, patchTodo, deleteTodo } from '../api/todos';
 import { Footer, Header, TodoCollection, TodoInput } from 'components';
 
 const TodoPage = () => {
@@ -148,10 +148,13 @@ const TodoPage = () => {
   };
 
   // 刪除todo，篩選出非點擊到的id
-  const handleDelete = (id) => {
-    setTodos((prevTodos) => {
-      return prevTodos.filter((todo) => todo.id !== id);
-    });
+  const handleDelete = async (id) => {
+    try {
+      await deleteTodo(id);
+      setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {

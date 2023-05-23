@@ -2,7 +2,7 @@
   "todos": [
     {
       "title": "Learn react-router -2",
-      "isDone": false,
+      "isDone": true,
       "id": 1
     },
     {
@@ -21,14 +21,9 @@
       "id": 4
     },
     {
-      "title": "Learn something new",
-      "isDone": false,
-      "id": 5
-    },
-    {
       "title": "Learn useState",
       "isDone": false,
-      "id": 6
+      "id": 5
     }
   ]
 }
