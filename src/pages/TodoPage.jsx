@@ -1,34 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getTodos } from '../api/todos';
 import { Footer, Header, TodoCollection, TodoInput } from 'components';
-
-const dummyTodos = [
-  {
-    title: 'Learn react-router',
-    isDone: true,
-    id: 1,
-  },
-  {
-    title: 'Learn to create custom hooks',
-    isDone: false,
-    id: 2,
-  },
-  {
-    title: 'Learn to use context',
-    isDone: true,
-    id: 3,
-  },
-  {
-    title: 'Learn to implement auth',
-    isDone: false,
-    id: 4,
-  },
-];
 
 const TodoPage = () => {
   // 輸入內容
   const [inputValue, setInputValue] = useState('');
   // 待辦事項
-  const [todos, setTodos] = useState(dummyTodos);
+  const [todos, setTodos] = useState([]);
 
   // 更新輸入內容
   const handleChange = (value) => {
@@ -132,6 +110,22 @@ const TodoPage = () => {
       return prevTodos.filter((todo) => todo.id !== id);
     });
   };
+
+  useEffect(() => {
+    // 取得todos
+    const getTodosAsync = async () => {
+      try {
+        const todos = await getTodos();
+
+        // 每個todo加上isEdit屬性並更新todos狀態
+        setTodos(todos.map((todo) => ({ ...todo, isEdit: false })));
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    getTodosAsync();
+  }, []);
 
   return (
     <div>
