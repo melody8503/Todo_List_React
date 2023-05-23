@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getTodos, createTodo } from '../api/todos';
+import { getTodos, createTodo, patchTodo } from '../api/todos';
 import { Footer, Header, TodoCollection, TodoInput } from 'components';
 
 const TodoPage = () => {
@@ -80,19 +80,30 @@ const TodoPage = () => {
   };
 
   // 透過id切換完成狀態
-  const handleToggleDone = (id) => {
-    setTodos((prevTodos) => {
-      return prevTodos.map((todo) => {
-        if (todo.id === id) {
-          return {
-            ...todo,
-            isDone: !todo.isDone,
-          };
-        }
-        // 不是點擊的id回傳原本的狀態
-        return todo;
+  const handleToggleDone = async (id) => {
+    // 用find找到第一個符合的item，回傳該item，todo為物件
+    const currentTodo = todos.find((todo) => todo.id === id);
+
+    try {
+      await patchTodo({
+        id,
+        isDone: !currentTodo.isDone,
       });
-    });
+      setTodos((prevTodos) => {
+        return prevTodos.map((todo) => {
+          if (todo.id === id) {
+            return {
+              ...todo,
+              isDone: !todo.isDone,
+            };
+          }
+          // 不是點擊的id回傳原本的狀態
+          return todo;
+        });
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // 切換編輯模式
@@ -112,20 +123,28 @@ const TodoPage = () => {
   };
 
   // 儲存todo
-  const handleSave = ({ id, title }) => {
-    setTodos((prevTodos) => {
-      return prevTodos.map((todo) => {
-        if (todo.id === id) {
-          return {
-            ...todo,
-            title,
-            isEdit: false,
-          };
-        }
-
-        return todo;
+  const handleSave = async ({ id, title }) => {
+    try {
+      await patchTodo({
+        id,
+        title,
       });
-    });
+      setTodos((prevTodos) => {
+        return prevTodos.map((todo) => {
+          if (todo.id === id) {
+            return {
+              ...todo,
+              title,
+              isEdit: false,
+            };
+          }
+
+          return todo;
+        });
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // 刪除todo，篩選出非點擊到的id
