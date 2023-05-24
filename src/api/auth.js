@@ -4,6 +4,7 @@ const authURL = 'https://todo-list.alphacamp.io/api/auth';
 
 export const login = async ({ username, password }) => {
   try {
+    // 將回傳的data物件用解構取出
     const { data } = await axios.post(`${authURL}/login`, {
       username,
       password,
