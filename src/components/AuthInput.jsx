@@ -28,8 +28,8 @@ const AuthInput = ({ type, label, value, placeholder, onChange }) => {
       <StyledLabel>{label}</StyledLabel>
       <StyledInput
         type={type || 'text'}
-        value={value}
-        placeholder={placeholder}
+        value={value || ''} // 若外層沒有帶入props就預設空字串
+        placeholder={placeholder || ''}
         onChange={(e) => onChange?.(e.target.value)}
       />
     </StyledContainer>
