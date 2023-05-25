@@ -7,6 +7,8 @@ const TodoPage = () => {
   const [inputValue, setInputValue] = useState('');
   // 待辦事項
   const [todos, setTodos] = useState([]);
+  // todo剩餘項目
+  const todoNums = todos.length;
 
   // 更新輸入內容
   const handleChange = (value) => {
@@ -190,7 +192,7 @@ const TodoPage = () => {
         onSave={handleSave}
         onDelete={handleDelete}
       />
-      <Footer todos={todos} />
+      <Footer numOfTodos={todoNums} />
     </div>
   );
 };
