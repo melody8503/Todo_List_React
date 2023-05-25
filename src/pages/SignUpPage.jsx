@@ -6,10 +6,10 @@ import {
 } from 'components/common/auth.styled';
 import { ACLogoIcon } from 'assets/images';
 import { AuthInput } from 'components';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { register, checkPermission } from '../api/auth';
 import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { register } from '../api/auth';
 
 const SignUpPage = () => {
   const [username, setUsername] = useState('');
@@ -54,6 +54,24 @@ const SignUpPage = () => {
       showConfirmButton: false,
     });
   };
+
+  useEffect(() => {
+    const checkTokenIsValid = async () => {
+      const authToken = localStorage.getItem('authToken');
+      // 未登入和驗證情況，停留在當前頁面
+      if (!authToken) {
+        return;
+      }
+
+      const result = await checkPermission(authToken);
+      // authToken有效就導引至todos
+      if (result) {
+        navigate('/todos');
+      }
+    };
+
+    checkTokenIsValid();
+  }, [navigate]);
 
   return (
     <AuthContainer>
