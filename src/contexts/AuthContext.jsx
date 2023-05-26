@@ -2,6 +2,7 @@ import { createContext, useState, useEffect } from 'react';
 import { login, register, checkPermission } from '../api/auth';
 import * as jwt from 'jsonwebtoken';
 import { useLocation } from 'react-router-dom';
+import { useContext } from 'react';
 
 // 初始狀態與方法
 const defaultAuthContext = {
@@ -16,7 +17,7 @@ const defaultAuthContext = {
 };
 
 const AuthContext = createContext(defaultAuthContext);
-
+export const useAuth = () => useContext(AuthContext);
 // 管理狀態
 export const AuthProvider = ({ children }) => {
   // 授權狀態
@@ -38,6 +39,7 @@ export const AuthProvider = ({ children }) => {
       // 判斷Token是否有效
       const result = await checkPermission(authToken);
       if (result) {
+        setIsAuthenticated(true);
         // 取得解析的payload
         const tempPayload = jwt.decode(authToken);
         setPayload(tempPayload);
