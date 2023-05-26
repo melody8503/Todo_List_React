@@ -1,4 +1,6 @@
 import { createContext, useState } from 'react';
+import { login, register } from 'api/auth';
+import * as jwt from 'jsonwebtoken';
 
 // 初始狀態與方法
 const defaultAuthContext = {
@@ -25,8 +27,54 @@ const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         isAuthenticated,
-        currentMember: payload,
+        currentMember: payload && {
+          //取得登入的使用者資訊
+          id: payload.sub,
+          name: payload.name,
+        },
+        register: async (data) => {
+          const { success, authToken } = await register({
+            username: data.username,
+            email: data.email,
+            password: data.password,
+          });
+
+          // 取得 payload 內容
+          const tempPayload = jwt.decode(authToken);
+          if (tempPayload) {
+            setPayload(tempPayload);
+            setIsAuthenticated(true);
+            localStorage.setItem('authToken', authToken);
+          } else {
+            setPayload(null);
+            setIsAuthenticated(false);
+          }
+          return success;
+        },
+        login: async (data) => {
+          const { success, authToken } = await login({
+            username: data.username,
+            password: data.password,
+          });
+          const tempPayload = jwt.decode(authToken);
+          if (tempPayload) {
+            setPayload(tempPayload);
+            setIsAuthenticated(true);
+            localStorage.setItem('authToken', authToken);
+          } else {
+            setPayload(null);
+            setIsAuthenticated(false);
+          }
+          return success;
+        },
+        logout: () => {
+          localStorage.removeItem('authToken');
+          setPayload(null);
+          setIsAuthenticated(false);
+        },
       }}
-    ></AuthContext.Provider>
+    >
+      {children}
+    </AuthContext.Provider>
   );
 };
