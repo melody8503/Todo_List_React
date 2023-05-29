@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useAuth } from 'contexts/AuthContext';
 import styled from 'styled-components';
 
 const StyledFooter = styled.footer`
@@ -33,12 +33,9 @@ const StyledButton = styled.button`
 `;
 
 const Footer = ({ numOfTodos }) => {
-  const navigate = useNavigate();
-
+  const { logout } = useAuth();
   const handleClick = () => {
-    // 移除authToken並跳轉至login
-    localStorage.removeItem('authToken');
-    navigate('/login');
+    logout();
   };
 
   return (
