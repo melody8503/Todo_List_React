@@ -1,3 +1,6 @@
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import {
   AuthContainer,
   AuthInputContainer,
@@ -6,15 +9,15 @@ import {
 } from 'components/common/auth.styled';
 import { ACLogoIcon } from 'assets/images';
 import { AuthInput } from 'components';
-import { useState, useEffect } from 'react';
-import { login, checkPermission } from '../api/auth';
-import { Link, useNavigate } from 'react-router-dom';
+
 import Swal from 'sweetalert2';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+
+  const { login, isAuthenticated } = useAuth();
 
   const handleClick = async () => {
     // 驗證使用者輸入是否有值
@@ -25,13 +28,13 @@ const LoginPage = () => {
       return;
     }
 
-    const { success, authToken } = await login({
+    // 回傳布林值
+    const success = await login({
       username,
       password,
     });
+
     if (success) {
-      // 資料存入localStorage
-      localStorage.setItem('authToken', authToken);
       // 登入成功訊息
       Swal.fire({
         position: 'top',
@@ -40,8 +43,6 @@ const LoginPage = () => {
         icon: 'success',
         showConfirmButton: false,
       });
-      // 使用useNavigate導引至todos
-      navigate('/todos');
       return;
     }
     // 登入失敗訊息
@@ -55,19 +56,10 @@ const LoginPage = () => {
   };
 
   useEffect(() => {
-    const checkTokenIsValid = async () => {
-      const authToken = localStorage.getItem('authToken');
-      if (!authToken) {
-        return;
-      }
-      const result = await checkPermission(authToken);
-      if (result) {
-        navigate('/todos');
-      }
-    };
-
-    checkTokenIsValid();
-  }, [navigate]);
+    if (isAuthenticated) {
+      navigate('/todos');
+    }
+  }, [navigate, isAuthenticated]);
 
   return (
     <AuthContainer>
